@@ -13,7 +13,7 @@ else:
     
 port = 4444
 server_address = (ip, port)
-protocols = ["udp", "tcp", "sctp"]
+protocols = ["udp", "tcp", "sctp", "run", "close"]
 protocol = ""
 
 while protocol not in protocols:
@@ -21,39 +21,46 @@ while protocol not in protocols:
 
 while True:
     if protocol == "udp":
+        print("udp")
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind(server_address)
-        data, address = sock.recvfrom(4096)
+        data, client_address = sock.recvfrom(4096)
         command = data.decode('utf-8').lower()
         print(command)
         if command in protocols:
             protocol = command
     elif protocol == "tcp":
-        sock.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print("tcp")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(server_address)
         sock.listen()
         connection, client_address = sock.accept()
-        print("Conexão com " + client_address + " estabelecida")
+        print("Conexão com " + client_address[0] + " estabelecida")
         command = connection.recv(4096).decode('utf-8')
         print(command)
         if command in protocols:
             protocol = command
-    elif protocol = "sctp":
+    elif protocol == "sctp":
+        print("sctp")
         sock = sctp.sctpsocket_tcp(socket.AF_INET)
-        sock.bind(address)
+        sock.bind(server_address)
         sock.listen(1)
         connection, client_address = sock.accept()
-        print("Conexão com " + client_address + " estabelecida")
+        print("Conexão com " + client_address[0] + " estabelecida")
         command = connection.recv(4096).decode('utf-8')
         print(command)
         if command in protocols:
             protocol = command
-    elif protocol = "close":
-        if protocol in ('tcp', 'sctp')
-        connection.close()
+    elif protocol == "run":
+        comando = "lixo"
+        time.sleep(3)
+        sock.sendto(comando.encode('utf-8'), client_address)
+        data, client_address = sock.recvfrom(4096)
+    elif protocol == "close":
+        if protocol in ('tcp', 'sctp'):
+	        connection.close()
         break
-
-sock.close()
+    #sock.close()
 
 
 	
