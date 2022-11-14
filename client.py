@@ -14,16 +14,25 @@ def thread_tcpdump(address):
     if protocol == 'udp':
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
         sock.sendto(command.encode('utf-8'), (address, port))
-        data, address = sock.recvfrom(4096)
-        print(data.decode('utf-8'))
+        if command == 'run':
+            data, address = sock.recvfrom(4096)
+            print(data.decode('utf-8'))
     elif protocol == 'tcp':
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((address, port))
         sock.send(str.encode(command))
+        if command == 'run':
+            print("Aguardando resposta...")
+            data = sock.recv(4096)
+            print(data.decode('utf-8'))
     elif protocol == 'sctp':
         sock = sctp.sctpsocket_tcp(socket.AF_INET)
         sock.connect((address, port))
-        sock.sctp_send(command, stream=9)
+        sock.sctp_send(command)
+        if command == 'run':
+            print("Aguardando resposta...")
+            data = sock.recv(4096)
+            print(data.decode('utf-8'))
     sock.close()
     #time.sleep(10)
 
@@ -60,11 +69,13 @@ while(opcao != "6"):
         call_tcpdump(listaServidores)
         for index, thread in enumerate(threads):
             thread.join()
+            
     elif(opcao == "5"):
         new = ""
         while new.lower() not in ('udp', 'tcp', 'sctp'):
             new = input("Digite o protocolo desejado (UDP, TCP ou SCTP): ").lower()
             protocol = new
+        print("Protocolo alterado: " + protocol)
 
         
 
