@@ -31,7 +31,6 @@ server_address = (ip, port)
 protocols = ["udp", "tcp", "sctp"]
 protocol = ""
 
-
 while protocol not in protocols:
     protocol = input("Selecionar protocolo inicial (UDP, TCP, SCTP): ").lower()
 
@@ -51,6 +50,7 @@ while True:
     elif protocol == "tcp":
         print("Protocolo alterado para TCP.")
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(server_address)
         sock.listen()
         connection, client_address = sock.accept()
@@ -59,7 +59,7 @@ while True:
         print("Comando recebido: " + command)
         if command == "run":
             response = run_tcp_dump()
-            sock.sendto(response.encode('utf-8'), client_address)
+            connection.send(response.encode('utf-8'))
         elif command in protocols:
             protocol = command
     elif protocol == "sctp":
@@ -73,13 +73,11 @@ while True:
         print("Comando recebido: " + command)
         if command == "run":
             response = run_tcp_dump()
-            sock.sendto(response.encode('utf-8'), client_address)
+            connection.send(response.encode('utf-8'))
         elif command in protocols:
             protocol = command
     if protocol in ('tcp', 'sctp'):
 	    connection.close()
     sock.close()
-    time.sleep(3)
+    time.sleep(2)
 
-
-	
