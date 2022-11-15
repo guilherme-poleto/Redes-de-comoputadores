@@ -9,7 +9,7 @@ port = 4444
 
 threads = list()
 
-def thread_tcpdump(address):
+def send_command(address):
     print("Iniciando conexao com servidor: " + address)
     if protocol == 'udp':
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
@@ -34,11 +34,10 @@ def thread_tcpdump(address):
             data = sock.recv(4096)
             print(data.decode('utf-8'))
     sock.close()
-    #time.sleep(10)
 
 def call_tcpdump(serverList):
     for addresses in serverList:
-        thread = threading.Thread(target=thread_tcpdump, args=(addresses,))
+        thread = threading.Thread(target=send_command, args=(addresses,))
         threads.append(thread)
         thread.start()
         
@@ -54,7 +53,7 @@ print("\n[1] Adicionar servidor\n"
       "[6] Sair\n")
       
 while(opcao != "6"):
-    opcao = input("Digite uma opcao: ")
+    opcao = input("\nDigite uma opcao: ")
     
     if(opcao == "1"):
         sv = input("Digite o endereço do servidor: ")
@@ -77,21 +76,3 @@ while(opcao != "6"):
             protocol = new
         print("Protocolo alterado: " + protocol)
 
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
