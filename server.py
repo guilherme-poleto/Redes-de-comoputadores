@@ -4,6 +4,10 @@ import os
 import subprocess 
 import time
 import sctp
+import matplotlib
+from matplotlib import pyplot as plt
+
+matplotlib.use("agg")
 
 def run_tcp_dump():
     response = "\nRESPONSE FROM IP: " + ip + " HOSTNAME: " + socket.gethostname() + "\n\n"
@@ -19,36 +23,58 @@ def run_tcp_dump():
     readFile.close()
     os.remove('out.txt')
     return response
+    
+def plot_graph(x,y):
+    plt.plot(x,y)
+    plt.title("Teste protocolo " + protocol)
+    plt.savefig("protocolo-" + protocol + ".png")
+    x.clear()
+    y.clear()
+
 
 if len(sys.argv) == 2:
     ip = sys.argv[1]
 else:
-    print("Run like: python3 server.py 192.168.1.6>")
+    print("Run like: python3 server.py 192.168.1.6")
     exit(1)
     
 port = 4444
 server_address = (ip, port)
 protocols = ["udp", "tcp", "sctp"]
 protocol = ""
+c = 0
+x = []
+y = []
 
 while protocol not in protocols:
     protocol = input("Selecionar protocolo inicial (UDP, TCP, SCTP): ").lower()
 
 while True:
+    print("\nProtocolo ativo: " + protocol)
     if protocol == "udp":
-        print("Protocolo alterado para UDP.")
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind(server_address)
         data, client_address = sock.recvfrom(4096)
         command = data.decode('utf-8').lower()
-        print(command)
+        print("Comando recebido: " + command)
         if command == "run":
             response = run_tcp_dump()
             sock.sendto(response.encode('utf-8'), client_address)
-        elif command in protocols:
-            protocol = command
+        elif command == "test":
+            value = ""
+            while value != "fim":
+                data, client_address = sock.recvfrom(4096)
+                value = data.decode('utf-8')
+                print("Mensagem recebida: " + value)
+                try:
+                    y.append(int(value))
+                    c+=1
+                    x.append(c)
+                except:
+                    False
+            plot_graph(x,y)
+
     elif protocol == "tcp":
-        print("Protocolo alterado para TCP.")
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(server_address)
@@ -60,10 +86,19 @@ while True:
         if command == "run":
             response = run_tcp_dump()
             connection.send(response.encode('utf-8'))
-        elif command in protocols:
-            protocol = command
+        elif command == "test":
+            value = ""
+            while value != "fim":
+                value = connection.recv(4096).decode('utf-8')
+                print("Mensagem recebida: " + value)
+                try:
+                    y.append(int(value))
+                    c+=1
+                    x.append(c)
+                except:
+                    False
+            plot_graph(x,y)
     elif protocol == "sctp":
-        print("Protocolo alterado para SCTP.")
         sock = sctp.sctpsocket_tcp(socket.AF_INET)
         sock.bind(server_address)
         sock.listen(1)
@@ -74,10 +109,22 @@ while True:
         if command == "run":
             response = run_tcp_dump()
             connection.send(response.encode('utf-8'))
-        elif command in protocols:
-            protocol = command
+        elif command == "test":
+            value = ""
+            while value != "fim":
+                value = connection.recv(4096).decode('utf-8')
+                print("Mensagem recebida: " + value)
+                try:
+                    y.append(int(value))
+                    c+=1
+                    x.append(c)
+                except:
+                    False
+            plot_graph(x,y)
     if protocol in ('tcp', 'sctp'):
 	    connection.close()
+    if command in protocols:
+	    protocol = command
     sock.close()
     time.sleep(2)
-
+    
