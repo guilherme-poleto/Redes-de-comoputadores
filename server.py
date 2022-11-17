@@ -28,9 +28,7 @@ def plot_graph(x,y):
     plt.plot(x,y)
     plt.title("Teste protocolo " + protocol)
     plt.savefig("protocolo-" + protocol + ".png")
-    x.clear()
-    y.clear()
-
+    plt.clf()
 
 if len(sys.argv) == 2:
     ip = sys.argv[1]
@@ -73,6 +71,9 @@ while True:
                 except:
                     False
             plot_graph(x,y)
+            x.clear()
+            y.clear()
+            c = 0
 
     elif protocol == "tcp":
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -98,6 +99,9 @@ while True:
                 except:
                     False
             plot_graph(x,y)
+            x.clear()
+            y.clear()
+            c = 0
     elif protocol == "sctp":
         sock = sctp.sctpsocket_tcp(socket.AF_INET)
         sock.bind(server_address)
@@ -121,6 +125,9 @@ while True:
                 except:
                     False
             plot_graph(x,y)
+            x.clear()
+            y.clear()
+            c = 0
     if protocol in ('tcp', 'sctp'):
 	    connection.close()
     if command in protocols:
