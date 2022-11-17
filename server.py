@@ -1,7 +1,7 @@
 import socket
 import sys
 import os
-import subprocess 
+import subprocess
 import time
 import sctp
 import matplotlib
@@ -11,31 +11,33 @@ matplotlib.use("agg")
 
 def run_tcp_dump():
     response = "\nRESPONSE FROM IP: " + ip + " HOSTNAME: " + socket.gethostname() + "\n\n"
-    outfile = open('out.txt','w')
+    outfile = open('out.txt', 'w')
     status = subprocess.Popen(['tcpdump', '-n'], bufsize=0, stdout=outfile)
     time.sleep(10)
     status.terminate()
     outfile.close()
     time.sleep(2)
-    readFile = open('out.txt','r')
+    readFile = open('out.txt', 'r')
     for line in readFile:
-        response = response + line +"\n"
+        response = response + line + "\n"
     readFile.close()
     os.remove('out.txt')
     return response
-    
-def plot_graph(x,y):
-    plt.plot(x,y)
+
+
+def plot_graph(x, y):
+    plt.plot(x, y)
     plt.title("Teste protocolo " + protocol)
     plt.savefig("protocolo-" + protocol + ".png")
     plt.clf()
+
 
 if len(sys.argv) == 2:
     ip = sys.argv[1]
 else:
     print("Run like: python3 server.py 192.168.1.6")
     exit(1)
-    
+
 port = 4444
 server_address = (ip, port)
 protocols = ["udp", "tcp", "sctp"]
@@ -66,11 +68,11 @@ while True:
                 print("Mensagem recebida: " + value)
                 try:
                     y.append(int(value))
-                    c+=1
+                    c += 1
                     x.append(c)
                 except:
                     False
-            plot_graph(x,y)
+            plot_graph(x, y)
             x.clear()
             y.clear()
             c = 0
@@ -94,11 +96,11 @@ while True:
                 print("Mensagem recebida: " + value)
                 try:
                     y.append(int(value))
-                    c+=1
+                    c += 1
                     x.append(c)
                 except:
                     False
-            plot_graph(x,y)
+            plot_graph(x, y)
             x.clear()
             y.clear()
             c = 0
@@ -120,18 +122,17 @@ while True:
                 print("Mensagem recebida: " + value)
                 try:
                     y.append(int(value))
-                    c+=1
+                    c += 1
                     x.append(c)
                 except:
                     False
-            plot_graph(x,y)
+            plot_graph(x, y)
             x.clear()
             y.clear()
             c = 0
     if protocol in ('tcp', 'sctp'):
-	    connection.close()
+        connection.close()
     if command in protocols:
-	    protocol = command
+        protocol = command
     sock.close()
     time.sleep(2)
-    

@@ -1,9 +1,8 @@
 import socket
 import sctp
-import time
 import threading
 import time
-import sys
+
 
 def send_command(address):
     print("Iniciando conexao com servidor: " + address)
@@ -14,7 +13,7 @@ def send_command(address):
             data, address = sock.recvfrom(4096)
             print(data.decode('utf-8'))
         if command == 'test':
-            for i in range(1,10000):
+            for i in range(1, 10000):
                 sock.sendto(str.encode(str(i)), (address, port))
             last = "fim"
             sock.sendto(last.encode('utf-8'), (address, port))
@@ -27,9 +26,9 @@ def send_command(address):
             data = sock.recv(4096)
             print(data.decode('utf-8'))
         elif command == 'test':
-            for i in range(1,10000):
+            for i in range(1, 10000):
                 sock.send(str.encode(str(i)))
-                time.sleep(0.005);
+                time.sleep(0.005)
             last = "fim"
             sock.send(str.encode(last))
     elif protocol == 'sctp':
@@ -41,17 +40,19 @@ def send_command(address):
             data = sock.recv(4096)
             print(data.decode('utf-8'))
         elif command == 'test':
-            for i in range(1,10000):
+            for i in range(1, 10000):
                 sock.send(str.encode(str(i)))
             last = "fim"
             sock.send(str.encode(last))
     sock.close()
+
 
 def call_thread(serverList):
     for addresses in serverList:
         thread = threading.Thread(target=send_command, args=(addresses,))
         threads.append(thread)
         thread.start()
+
 
 port = 4444
 threads = list()
@@ -65,18 +66,18 @@ print("\n[1] Adicionar servidor\n"
       "[4] Enviar comando para lista de servidores\n"
       "[5] Selecionar protocolo\n"
       "[6] Sair\n")
-      
-while(opcao != "6"):
+
+while (opcao != "6"):
     opcao = input("\nDigite uma opcao: ")
-    if(opcao == "1"):
+    if (opcao == "1"):
         sv = input("Digite o endereço do servidor: ")
         listaServidores.append(sv)
-    elif(opcao == "2"):
+    elif (opcao == "2"):
         sv = input("Digite o endereço do servidor para remover: ")
         listaServidores.remove(sv)
-    elif(opcao == "3"):
+    elif (opcao == "3"):
         print(listaServidores)
-    elif(opcao == "4"):
+    elif (opcao == "4"):
         command = input("Digite o comando: ")
         i = time.time()
         call_thread(listaServidores)
@@ -84,8 +85,8 @@ while(opcao != "6"):
             thread.join()
         f = time.time()
         if command == "test":
-            print(f"O protocolo {protocol} levou {(f-i):.2f} segundos")
-    elif(opcao == "5"):
+            print(f"O protocolo {protocol} levou {(f - i):.2f} segundos")
+    elif (opcao == "5"):
         new = ""
         while new.lower() not in ('udp', 'tcp', 'sctp'):
             new = input("Digite o protocolo desejado (UDP, TCP ou SCTP): ").lower()
