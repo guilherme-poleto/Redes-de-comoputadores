@@ -2,7 +2,7 @@ import socket
 import sctp
 import time
 import threading
-from time import sleep
+import time
 import sys
 
 port = 4444
@@ -18,7 +18,7 @@ def send_command(address):
             data, address = sock.recvfrom(4096)
             print(data.decode('utf-8'))
         if command == 'test':
-            for i in range(1,15001):
+            for i in range(1,10000):
                 sock.sendto(str.encode(str(i)), (listaServidores[0], port))
             last = "fim"
             sock.sendto(last.encode('utf-8'), (listaServidores[0], port))
@@ -31,9 +31,9 @@ def send_command(address):
             data = sock.recv(4096)
             print(data.decode('utf-8'))
         elif command == 'test':
-            for i in range(1,15001):
+            for i in range(1,10000):
                 sock.send(str.encode(str(i)))
-                time.sleep(0.009);
+                time.sleep(0.005);
             last = "fim"
             sock.send(str.encode(last))
     elif protocol == 'sctp':
@@ -45,7 +45,7 @@ def send_command(address):
             data = sock.recv(4096)
             print(data.decode('utf-8'))
         elif command == 'test':
-            for i in range(1,15001):
+            for i in range(1,10000):
                 sock.send(str.encode(str(i)))
             last = "fim"
             sock.send(str.encode(last))
@@ -80,9 +80,13 @@ while(opcao != "6"):
         print(listaServidores)
     elif(opcao == "4"):
         command = input("Digite o comando: ")
+        i = time.time()
         call_thread(listaServidores)
         for index, thread in enumerate(threads):
             thread.join()
+        f = time.time()
+        if command == "test":
+            print(f"O protocolo {protocol} levou {(f-i):.2f} segundos")
     elif(opcao == "5"):
         new = ""
         while new.lower() not in ('udp', 'tcp', 'sctp'):
@@ -99,7 +103,3 @@ for i in range(1,15000):
     elif protocol == "sctp":
         sock.sctp_send(str(i))
         
-
-
-
-
