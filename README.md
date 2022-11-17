@@ -1,4 +1,4 @@
-# Redes-de-computadores
+# Redes de computadores - Trabalho GB
 
 * Run these commands to install sctp library
 
