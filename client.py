@@ -19,9 +19,9 @@ def send_command(address):
             print(data.decode('utf-8'))
         if command == 'test':
             for i in range(1,10000):
-                sock.sendto(str.encode(str(i)), (listaServidores[0], port))
+                sock.sendto(str.encode(str(i)), (address, port))
             last = "fim"
-            sock.sendto(last.encode('utf-8'), (listaServidores[0], port))
+            sock.sendto(last.encode('utf-8'), (address, port))
     elif protocol == 'tcp':
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((address, port))
@@ -66,7 +66,7 @@ print("\n[1] Adicionar servidor\n"
       "[3] Mostrar lista de servidores\n"
       "[4] Enviar comando para lista de servidores\n"
       "[5] Selecionar protocolo\n"
-      "[6] Testar protocolos\n")
+      "[6] Sair\n")
       
 while(opcao != "6"):
     opcao = input("\nDigite uma opcao: ")
@@ -94,12 +94,3 @@ while(opcao != "6"):
         protocol = new
         print("Protocolo alterado: " + protocol)
 
-i = time.time()
-for i in range(1,15000):
-    if protocol == "udp":
-        sock.sendto(str.encode(str(i)), (listaServidores[0], port))
-    elif protocol == "tcp":
-        sock.send(str.encode(str(i)))
-    elif protocol == "sctp":
-        sock.sctp_send(str(i))
-        
