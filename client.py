@@ -5,10 +5,6 @@ import threading
 import time
 import sys
 
-port = 4444
-
-threads = list()
-
 def send_command(address):
     print("Iniciando conexao com servidor: " + address)
     if protocol == 'udp':
@@ -56,7 +52,9 @@ def call_thread(serverList):
         thread = threading.Thread(target=send_command, args=(addresses,))
         threads.append(thread)
         thread.start()
-        
+
+port = 4444
+threads = list()
 listaServidores = list()
 protocol = 'udp'
 opcao = ""
@@ -93,4 +91,3 @@ while(opcao != "6"):
             new = input("Digite o protocolo desejado (UDP, TCP ou SCTP): ").lower()
         protocol = new
         print("Protocolo alterado: " + protocol)
-
